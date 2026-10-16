@@ -1,0 +1,29 @@
+name: Radar Cuantitativo Alpha MAX
+
+on:
+  schedule:
+    # Se ejecuta a las 06:00 UTC (08:00 AM hora de España) de Lunes a Viernes
+    - cron: '0 6 * * 1-5'
+  workflow_dispatch: # Activa un botón en GitHub para ejecutarlo manualmente cuando quieras
+
+jobs:
+  run-sentinel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar Código Base
+        uses: actions/checkout@v3
+        
+      - name: Instalar Entorno Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          
+      - name: Instalar Librerías Cuantitativas
+        run: pip install -r requirements.txt
+        
+      - name: Ejecutar Centinela Autónomo
+        env:
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          DESTINATION_EMAIL: ${{ secrets.DESTINATION_EMAIL }}
+        run: python sentinel_alerts.py
